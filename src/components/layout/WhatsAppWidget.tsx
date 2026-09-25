@@ -33,15 +33,17 @@ export function WhatsAppWidget() {
     } catch {}
   };
 
+  // The wrapper ignores taps; only the visible bubble (and the open chat card) receive them.
+  // Without this, the invisible closed card blocked taps on the page underneath on phones.
   return (
-    <div className="fixed right-4 bottom-4 z-40 flex flex-col items-end gap-3 sm:right-6 sm:bottom-6">
+    <div className="pointer-events-none fixed right-4 bottom-4 z-40 flex flex-col items-end gap-3 sm:right-6 sm:bottom-6">
       <div
         role="dialog"
         aria-label="Chat with Admire on WhatsApp"
         aria-hidden={!open}
         className={cn(
           "border-line bg-surface w-[min(20rem,calc(100vw-2rem))] origin-bottom-right overflow-hidden rounded-2xl border shadow-2xl transition-all duration-300",
-          open ? "scale-100 opacity-100" : "pointer-events-none scale-90 opacity-0",
+          open ? "pointer-events-auto visible scale-100 opacity-100" : "invisible scale-90 opacity-0",
         )}
       >
         <div className="flex items-center gap-3 bg-[#075e54] px-4 py-3">
@@ -73,7 +75,7 @@ export function WhatsAppWidget() {
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="pointer-events-auto flex items-center gap-3">
         {hint && !open && (
           <button
             type="button"
