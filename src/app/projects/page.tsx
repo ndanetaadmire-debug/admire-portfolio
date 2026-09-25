@@ -24,10 +24,10 @@ export default function ProjectsPage() {
         eyebrow="Projects"
         title={
           <>
-            Nine case files, <Highlight>one bar of craft</Highlight>
+            Ten case files, <Highlight>one bar of craft</Highlight>
           </>
         }
-        description="A live client store plus full-stack products across eight industries. Open any card for the full case study."
+        description="Professional SaaS work, a live client store and full-stack products across nine industries. Open any card for the full case study."
       />
       <section className="container-page">
         <ProjectGrid
@@ -35,8 +35,8 @@ export default function ProjectsPage() {
           cards={cards}
         />
         <p className="text-subtle mx-auto mt-12 max-w-2xl text-center text-xs leading-relaxed">
-          Portfolio projects are shown with illustrative UI screens built to reflect each app&apos;s real features.
-          Lwazi Hair screens are from the live production store.
+          Gerko and Lwazi Hair screens are from the live products. Portfolio projects are shown with illustrative UI
+          screens built to reflect each app&apos;s real features.
         </p>
       </section>
       <CtaBand />

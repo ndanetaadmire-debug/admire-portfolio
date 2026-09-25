@@ -4,7 +4,7 @@
  */
 export default function Template({ children }: { children: React.ReactNode }) {
   return (
-    <main id="main" className="animate-page-in">
+    <main id="main" className="animate-fade-in">
       {children}
     </main>
   );

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 import type { ProjectImage } from "@/types/content";
 import { cn } from "@/lib/utils";
@@ -82,58 +83,62 @@ export function Gallery({ images }: { images: ProjectImage[] }) {
         );
       })}
 
-      {open && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={images[index].caption}
-          className="animate-page-in fixed inset-0 z-[70] flex flex-col bg-black/90 backdrop-blur-md"
-          onClick={() => setIndex(null)}
-        >
-          <div className="text-muted flex items-center justify-between px-4 py-4 text-sm sm:px-8">
-            <span>
-              {index + 1} / {images.length} · <span className="text-white">{images[index].caption}</span>
-            </span>
-            <button
-              type="button"
-              aria-label="Close"
-              autoFocus
-              className="grid size-10 place-items-center rounded-full bg-white/10"
-            >
-              <X className="size-5 text-white" />
-            </button>
-          </div>
-          <div className="relative flex-1" onClick={(e) => e.stopPropagation()}>
-            <Image
-              src={images[index].src}
-              alt={images[index].alt}
-              fill
-              sizes="100vw"
-              className="object-contain p-2 sm:p-8"
-            />
-            {images.length > 1 && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => go(-1)}
-                  aria-label="Previous image"
-                  className="absolute top-1/2 left-2 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-white/10 hover:bg-white/20 sm:left-6"
-                >
-                  <ChevronLeft className="size-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => go(1)}
-                  aria-label="Next image"
-                  className="absolute top-1/2 right-2 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-white/10 hover:bg-white/20 sm:right-6"
-                >
-                  <ChevronRight className="size-5" />
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Portal to <body> so the fixed overlay always covers the viewport,
+          even inside animated/transformed ancestors. */}
+      {open &&
+        createPortal(
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={images[index].caption}
+            className="animate-fade-in fixed inset-0 z-[70] flex flex-col bg-black/90 backdrop-blur-md"
+            onClick={() => setIndex(null)}
+          >
+            <div className="text-muted flex items-center justify-between px-4 py-4 text-sm sm:px-8">
+              <span>
+                {index + 1} / {images.length} · <span className="text-white">{images[index].caption}</span>
+              </span>
+              <button
+                type="button"
+                aria-label="Close"
+                autoFocus
+                className="grid size-10 place-items-center rounded-full bg-white/10"
+              >
+                <X className="size-5 text-white" />
+              </button>
+            </div>
+            <div className="relative flex-1" onClick={(e) => e.stopPropagation()}>
+              <Image
+                src={images[index].src}
+                alt={images[index].alt}
+                fill
+                sizes="100vw"
+                className="object-contain p-2 sm:p-8"
+              />
+              {images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => go(-1)}
+                    aria-label="Previous image"
+                    className="hover:bg-accent absolute top-1/2 left-2 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-black/60 ring-1 ring-white/30 backdrop-blur-md sm:left-6"
+                  >
+                    <ChevronLeft className="size-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => go(1)}
+                    aria-label="Next image"
+                    className="hover:bg-accent absolute top-1/2 right-2 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-black/60 ring-1 ring-white/30 backdrop-blur-md sm:right-6"
+                  >
+                    <ChevronRight className="size-5" />
+                  </button>
+                </>
+              )}
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

@@ -21,15 +21,19 @@ export function ProjectCard({ project, priority = false }: { project: Project; p
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" aria-hidden />
         <span
           className={cn(
-            "absolute top-3 left-3 rounded-full px-3 py-1 text-[11px] font-medium backdrop-blur-md",
-            project.category === "Client" ? "bg-green/90 text-black" : "bg-black/60 text-white/90",
+            "absolute top-3 left-3 rounded-full px-3 py-1 text-xs font-medium backdrop-blur-md",
+            project.category === "Professional"
+              ? "bg-accent/90 text-white"
+              : project.category === "Client"
+                ? "bg-green/90 text-black"
+                : "bg-black/60 text-white/90",
           )}
         >
           {project.status}
         </span>
       </div>
       <div className="flex flex-1 flex-col px-3 pt-5 pb-3">
-        <p className={cn("font-mono text-[11px] tracking-[0.18em] uppercase", a.text)}>{project.industry}</p>
+        <p className={cn("font-mono text-xs tracking-[0.18em] uppercase", a.text)}>{project.industry}</p>
         <h3 className="mt-2 text-xl font-semibold tracking-tight">
           <Link href={`/projects/${project.slug}`} className="after:absolute after:inset-0">
             {project.title}
@@ -38,12 +42,12 @@ export function ProjectCard({ project, priority = false }: { project: Project; p
         <p className="text-muted mt-2 line-clamp-2 text-sm leading-relaxed">{project.tagline}</p>
         <ul className="mt-5 flex flex-wrap gap-1.5">
           {project.stack.slice(0, 4).map((t) => (
-            <li key={t} className="rounded-md bg-white/[0.05] px-2 py-1 text-[11px] text-white/75">
+            <li key={t} className="rounded-md bg-white/[0.05] px-2 py-1 text-xs text-white/75">
               {t}
             </li>
           ))}
           {project.stack.length > 4 && (
-            <li className="text-subtle rounded-md px-1 py-1 text-[11px]">+{project.stack.length - 4}</li>
+            <li className="text-subtle rounded-md px-1 py-1 text-xs">+{project.stack.length - 4}</li>
           )}
         </ul>
         <span className="mt-auto flex items-center gap-1.5 pt-6 text-sm font-medium text-white/90">

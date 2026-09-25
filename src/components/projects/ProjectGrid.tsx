@@ -18,12 +18,13 @@ export function ProjectGrid({
 }) {
   const filters = useMemo(() => {
     const tech = ["React", "Next.js", "Node.js", "PostgreSQL", "MongoDB"];
-    return ["All", "Client work", ...tech];
+    return ["All", "Professional", "Client work", ...tech];
   }, []);
   const [active, setActive] = useState("All");
 
   const visible = projects.filter((p) => {
     if (active === "All") return true;
+    if (active === "Professional") return p.category === "Professional";
     if (active === "Client work") return p.category === "Client";
     return p.stack.includes(active);
   });

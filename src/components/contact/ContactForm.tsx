@@ -1,51 +1,88 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { CheckCircle2, Loader2, Send } from "lucide-react";
+import { useState, type ChangeEvent, type FocusEvent, type FormEvent } from "react";
+import { AlertCircle, Check, CheckCircle2, Copy, Loader2, Send } from "lucide-react";
 import { validateContact, type ContactErrors } from "@/lib/contact";
 import { site } from "@/content/site";
 import { cn } from "@/lib/utils";
 
-type Status = "idle" | "sending" | "sent" | "error";
+/**
+ * Controlled contact form.
+ *
+ * - Every input's value lives in React state (`values`) — the DOM never holds the source of truth.
+ * - Errors are shown only after a field is "touched" (blurred) or after a submit attempt,
+ *   then update live as the visitor types.
+ * - The submit sends JSON to /api/contact and shows a clear on-page result for every outcome.
+ */
 
-const field =
-  "w-full rounded-xl border border-line bg-surface-2 px-4 py-3 text-sm text-white placeholder:text-subtle outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30";
+type Field = "name" | "email" | "message";
+type Values = Record<Field, string> & { company: string }; // `company` = honeypot
+type Status = "idle" | "sending" | "sent" | "unavailable" | "error";
+
+const EMPTY: Values = { name: "", email: "", message: "", company: "" };
+const MAX_MESSAGE = 5000;
+
+const inputBase =
+  "w-full rounded-xl border bg-surface-2 px-4 py-3 text-sm text-white placeholder:text-subtle outline-none transition focus:ring-2";
 
 export function ContactForm() {
+  const [values, setValues] = useState<Values>(EMPTY);
+  const [touched, setTouched] = useState<Record<Field, boolean>>({ name: false, email: false, message: false });
   const [status, setStatus] = useState<Status>("idle");
-  const [errors, setErrors] = useState<ContactErrors>({});
+  const [copied, setCopied] = useState(false);
+
+  // Derived state: recomputed on every render from the current values, so it can never go stale.
+  const errors: ContactErrors = validateContact(values);
+  const isValid = Object.keys(errors).length === 0;
+  const visibleError = (f: Field) => (touched[f] ? errors[f] : undefined);
+
+  function onChange(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    const { name, value } = e.target;
+    setValues((v) => ({ ...v, [name]: value }));
+    if (status === "error" || status === "unavailable") setStatus("idle");
+  }
+
+  function onBlur(e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    const name = e.target.name as Field;
+    setTouched((t) => ({ ...t, [name]: true }));
+  }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = e.currentTarget;
-    const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
-    const errs = validateContact(data);
-    setErrors(errs);
-    if (Object.keys(errs).length) return;
+    setTouched({ name: true, email: true, message: true }); // reveal all errors on submit
+    if (!isValid || status === "sending") return;
 
     setStatus("sending");
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          name: values.name.trim(),
+          email: values.email.trim(),
+          message: values.message.trim(),
+          company: values.company,
+        }),
       });
       if (res.ok) {
         setStatus("sent");
-        form.reset();
-        return;
+        setValues(EMPTY);
+        setTouched({ name: false, email: false, message: false });
+      } else {
+        setStatus(res.status === 503 ? "unavailable" : "error");
       }
-      if (res.status === 503) {
-        // Email service not configured yet → hand off to the visitor's email app.
-        const subject = encodeURIComponent(`Portfolio enquiry from ${data.name}`);
-        const body = encodeURIComponent(`${data.message}\n\n— ${data.name} (${data.email})`);
-        window.location.href = `mailto:${site.email}?subject=${subject}&body=${body}`;
-        setStatus("idle");
-        return;
-      }
-      setStatus("error");
     } catch {
       setStatus("error");
+    }
+  }
+
+  async function copyEmail() {
+    try {
+      await navigator.clipboard.writeText(site.email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* clipboard blocked — the address is visible anyway */
     }
   }
 
@@ -66,8 +103,16 @@ export function ContactForm() {
     );
   }
 
+  const fieldClass = (f: Field) =>
+    cn(
+      inputBase,
+      visibleError(f)
+        ? "border-rose/70 focus:border-rose focus:ring-rose/25"
+        : "border-line focus:border-accent focus:ring-accent/30",
+    );
+
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-4">
+    <form onSubmit={onSubmit} noValidate className="relative space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="name" className="text-muted mb-1.5 block text-xs">
@@ -76,15 +121,18 @@ export function ContactForm() {
           <input
             id="name"
             name="name"
+            value={values.name}
+            onChange={onChange}
+            onBlur={onBlur}
             autoComplete="name"
             placeholder="Jane Doe"
-            className={field}
-            aria-invalid={!!errors.name}
-            aria-describedby="name-err"
+            className={fieldClass("name")}
+            aria-invalid={!!visibleError("name")}
+            aria-describedby={visibleError("name") ? "name-err" : undefined}
           />
-          {errors.name && (
+          {visibleError("name") && (
             <p id="name-err" className="text-rose mt-1.5 text-xs">
-              {errors.name}
+              {visibleError("name")}
             </p>
           )}
         </div>
@@ -96,55 +144,97 @@ export function ContactForm() {
             id="email"
             name="email"
             type="email"
+            value={values.email}
+            onChange={onChange}
+            onBlur={onBlur}
             autoComplete="email"
             placeholder="jane@company.com"
-            className={field}
-            aria-invalid={!!errors.email}
-            aria-describedby="email-err"
+            className={fieldClass("email")}
+            aria-invalid={!!visibleError("email")}
+            aria-describedby={visibleError("email") ? "email-err" : undefined}
           />
-          {errors.email && (
+          {visibleError("email") && (
             <p id="email-err" className="text-rose mt-1.5 text-xs">
-              {errors.email}
+              {visibleError("email")}
             </p>
           )}
         </div>
       </div>
+
       <div>
-        <label htmlFor="message" className="text-muted mb-1.5 block text-xs">
-          Message
-        </label>
+        <div className="mb-1.5 flex items-center justify-between">
+          <label htmlFor="message" className="text-muted block text-xs">
+            Message
+          </label>
+          <span
+            className={cn("text-xs tabular-nums", values.message.length > MAX_MESSAGE ? "text-rose" : "text-subtle")}
+            aria-hidden
+          >
+            {values.message.length}/{MAX_MESSAGE}
+          </span>
+        </div>
         <textarea
           id="message"
           name="message"
           rows={6}
+          value={values.message}
+          onChange={onChange}
+          onBlur={onBlur}
           placeholder="Tell me about the role or project…"
-          className={cn(field, "resize-y")}
-          aria-invalid={!!errors.message}
-          aria-describedby="message-err"
+          className={cn(fieldClass("message"), "resize-y")}
+          aria-invalid={!!visibleError("message")}
+          aria-describedby={visibleError("message") ? "message-err" : undefined}
         />
-        {errors.message && (
+        {visibleError("message") && (
           <p id="message-err" className="text-rose mt-1.5 text-xs">
-            {errors.message}
+            {visibleError("message")}
           </p>
         )}
       </div>
-      {/* Honeypot — hidden from people, visible to bots */}
+
+      {/* Honeypot — hidden from people, filled in by bots */}
       <div aria-hidden className="absolute -left-[9999px]">
         <label htmlFor="company">Company</label>
-        <input id="company" name="company" tabIndex={-1} autoComplete="off" />
+        <input
+          id="company"
+          name="company"
+          value={values.company}
+          onChange={onChange}
+          tabIndex={-1}
+          autoComplete="off"
+        />
       </div>
+
+      {(status === "unavailable" || status === "error") && (
+        <div
+          role="alert"
+          className="border-amber/30 bg-amber/10 flex flex-col gap-3 rounded-xl border p-4 text-sm sm:flex-row sm:items-center"
+        >
+          <AlertCircle className="text-amber size-5 shrink-0" aria-hidden />
+          <p className="flex-1 text-white/85">
+            {status === "unavailable" ? "The form can't send right now." : "Something went wrong sending your message."}{" "}
+            Please email me directly at <span className="font-medium text-white">{site.email}</span>.
+          </p>
+          <button
+            type="button"
+            onClick={copyEmail}
+            className="inline-flex items-center gap-1.5 self-start rounded-full bg-white/10 px-3 py-1.5 text-xs hover:bg-white/15 sm:self-auto"
+          >
+            {copied ? <Check className="size-3.5" aria-hidden /> : <Copy className="size-3.5" aria-hidden />}
+            {copied ? "Copied" : "Copy email"}
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-subtle text-xs" role="status" aria-live="polite">
-          {status === "error" ? (
-            <span className="text-rose">Something went wrong — please email me directly.</span>
-          ) : (
-            "I usually reply within one business day."
-          )}
-        </p>
+        <p className="text-subtle text-xs">I usually reply within one business day.</p>
         <button
           type="submit"
           disabled={status === "sending"}
-          className="bg-accent hover:bg-accent-soft inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white transition disabled:opacity-60"
+          className={cn(
+            "bg-accent hover:bg-accent-soft inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white transition disabled:opacity-60",
+            !isValid && "opacity-70",
+          )}
         >
           {status === "sending" ? (
             <Loader2 className="size-4 animate-spin" aria-hidden />

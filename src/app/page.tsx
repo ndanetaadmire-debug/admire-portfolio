@@ -4,15 +4,14 @@ import { Hero } from "@/components/home/Hero";
 import { AboutStrip } from "@/components/home/AboutStrip";
 import { TechMarquee } from "@/components/home/TechMarquee";
 import { CtaBand } from "@/components/home/CtaBand";
+import { GerkoShowcase } from "@/components/home/GerkoShowcase";
 import { ServiceCard } from "@/components/ui/ServiceCard";
 import { ProjectCard } from "@/components/projects/ProjectCard";
-import { ExperienceCard } from "@/components/ui/ExperienceCard";
 import { SectionHeading, Highlight } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
 import { services } from "@/content/skills";
-import { featuredProjects } from "@/content/projects";
-import { experience } from "@/content/experience";
+import { featuredProjects, projects } from "@/content/projects";
 
 /**
  * Home = the "hero page". It previews each section and links to its own page,
@@ -59,14 +58,14 @@ export default function HomePage() {
                 Featured <Highlight>case studies</Highlight>
               </span>
             }
-            description="A live client store and full-stack products across fintech and e-commerce."
+            description="Healthcare SaaS I build full-time, a live client store and a secure fintech dashboard."
             className="text-center md:text-left"
           />
           <Link
             href="/projects"
             className="group text-accent-soft inline-flex shrink-0 items-center gap-2 text-sm font-medium"
           >
-            View all 9 projects
+            View all {projects.length} projects
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden />
           </Link>
         </div>
@@ -79,24 +78,7 @@ export default function HomePage() {
         </ul>
       </section>
 
-      <section className="container-page mt-28" aria-labelledby="exp-heading">
-        <SectionHeading
-          eyebrow="Where I am now"
-          title={
-            <span id="exp-heading">
-              Currently building at <Highlight>Gerko</Highlight>
-            </span>
-          }
-        />
-        <Reveal className="mx-auto mt-12 max-w-4xl">
-          <ExperienceCard job={experience[0]} compact />
-        </Reveal>
-        <div className="mt-10 flex justify-center">
-          <Button href="/experience" variant="ghost" icon={<ArrowRight className="size-4" aria-hidden />}>
-            Full career timeline
-          </Button>
-        </div>
-      </section>
+      <GerkoShowcase />
 
       <CtaBand />
     </>

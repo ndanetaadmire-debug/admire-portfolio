@@ -1,10 +1,16 @@
 import Image from "next/image";
-import { Activity, Check, Download, Gauge, MousePointer2, Users } from "lucide-react";
+import Link from "next/link";
+import { Activity, Check, Download, Gauge, MousePointer2, Play, Users } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { site } from "@/content/site";
 import portrait from "@/assets/admire.webp";
 
-const trust = ["6+ years shipping production code", "React · Node.js · PostgreSQL", "Remote-ready from South Africa"];
+const trust = [
+  "6+ years shipping production code",
+  "React · TypeScript · Next.js · Node.js",
+  "REST APIs · PostgreSQL · MongoDB · AWS",
+  "Remote-ready from South Africa",
+];
 
 const badges = [
   { icon: Gauge, value: "35%", label: "faster page loads", pos: "left-0 top-[18%] sm:-left-6", delay: "0s" },
@@ -61,11 +67,22 @@ export function Hero() {
             <Button href={site.cvPath} variant="ghost" download icon={<Download className="size-4" aria-hidden />}>
               Download CV
             </Button>
+            {site.introVideo && (
+              <Link
+                href="/about#intro"
+                className="group text-muted inline-flex items-center gap-2.5 px-3 py-3 text-sm font-medium transition-colors hover:text-white"
+              >
+                <span className="border-line-strong group-hover:border-accent group-hover:bg-accent grid size-9 place-items-center rounded-full border transition-colors">
+                  <Play className="ml-0.5 size-3.5 fill-current" aria-hidden />
+                </span>
+                Watch my intro
+              </Link>
+            )}
           </div>
 
-          <ul className="text-muted mt-8 flex flex-col items-center gap-2 text-sm sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-6 lg:justify-start">
+          <ul className="mx-auto mt-8 grid w-fit gap-x-8 gap-y-2.5 text-left text-sm text-white/85 sm:grid-cols-2 lg:mx-0">
             {trust.map((t) => (
-              <li key={t} className="flex items-center gap-2">
+              <li key={t} className="flex items-center gap-2 sm:whitespace-nowrap">
                 <Check className="text-accent-soft size-4" aria-hidden />
                 {t}
               </li>
@@ -106,7 +123,7 @@ export function Hero() {
               </span>
               <span className="text-left leading-tight">
                 <span className="block text-sm font-semibold">{value}</span>
-                <span className="text-muted block text-[11px]">{label}</span>
+                <span className="text-muted block text-xs">{label}</span>
               </span>
             </div>
           ))}

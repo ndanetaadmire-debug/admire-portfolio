@@ -33,9 +33,11 @@ export function SectionHeading({ eyebrow, title, description, align = "center", 
   );
 }
 
-/** Blue→white gradient span for highlighted words in headings. */
+/** Highlighted words in headings: a blue gradient with a moving shine (pure CSS). */
 export function Highlight({ children }: { children: ReactNode }) {
   return (
-    <span className="from-accent-soft via-sky bg-gradient-to-r to-white bg-clip-text text-transparent">{children}</span>
+    <span className="animate-shine bg-[linear-gradient(110deg,#3b82f6_0%,#87ceeb_30%,#ffffff_50%,#87ceeb_70%,#3b82f6_100%)] bg-[length:200%_auto] bg-clip-text text-transparent">
+      {children}
+    </span>
   );
 }

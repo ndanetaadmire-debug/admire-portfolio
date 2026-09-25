@@ -52,7 +52,7 @@ export function Navbar() {
           </span>
           <span className="hidden text-sm leading-tight font-semibold sm:block">
             {site.shortName}
-            <span className="text-muted block text-[11px] font-normal">{site.role}</span>
+            <span className="block text-xs font-normal text-white/80">{site.role}</span>
           </span>
         </Link>
 

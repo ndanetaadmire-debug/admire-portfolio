@@ -63,7 +63,7 @@ export default function SkillsPage() {
                           <TechIcon icon={s.icon} label={s.name} className="size-[18px]" />
                         </span>
                         <span className="flex-1 text-sm text-white/90">{s.name}</span>
-                        <span className="text-subtle text-[11px]">{s.level}</span>
+                        <span className="text-subtle text-xs">{s.level}</span>
                       </div>
                       <div className="mt-2 ml-12 h-1 overflow-hidden rounded-full bg-white/[0.06]" aria-hidden>
                         <div className={cn("h-full rounded-full opacity-80", a.bg, levelWidth[s.level])} />

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check, ExternalLink, FileText } from "lucide-react";
 import { Gallery } from "@/components/projects/Gallery";
+import { VideoPlayer } from "@/components/ui/VideoPlayer";
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
 import { CtaBand } from "@/components/home/CtaBand";
@@ -64,13 +65,18 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
 
           <dl className="mt-8 grid max-w-3xl grid-cols-2 gap-4 sm:grid-cols-4">
             {[
-              ["Role", "Full-Stack Developer"],
-              ["Type", project.category === "Client" ? "Client project" : "Portfolio project"],
+              ["Role", project.role ?? "Full-Stack Developer"],
+              [
+                "Type",
+                { Professional: "Live company product", Client: "Live client project", Portfolio: "Live project" }[
+                  project.category
+                ],
+              ],
               ["Status", project.status],
               ["Stack", `${project.stack.length} technologies`],
             ].map(([k, v]) => (
               <div key={k} className="border-line rounded-2xl border bg-white/[0.03] px-4 py-3">
-                <dt className="text-subtle text-[11px] tracking-wider uppercase">{k}</dt>
+                <dt className="text-subtle text-xs tracking-wider uppercase">{k}</dt>
                 <dd className="mt-1 text-sm text-white/90">{v}</dd>
               </div>
             ))}
@@ -79,7 +85,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
           <div className="mt-8 flex flex-wrap gap-3">
             {project.liveUrl && (
               <Button href={project.liveUrl} variant="primary" icon={<ExternalLink className="size-4" aria-hidden />}>
-                Visit live site
+                {project.category === "Professional" ? "Visit product" : "Visit live site"}
               </Button>
             )}
             {project.caseStudyPdf && (
@@ -96,24 +102,47 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
         </div>
       </header>
 
+      {project.metrics && (
+        <section aria-label="Results" className="container-page mb-10">
+          <dl className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            {project.metrics.map((m) => (
+              <div key={m.label} className="glass rounded-3xl p-5 sm:p-6">
+                <dt className="sr-only">{m.label}</dt>
+                <dd className={cn("text-3xl font-bold tracking-tight sm:text-4xl", a.text)}>{m.value}</dd>
+                <dd className="text-muted mt-1 text-sm">{m.label}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+
       <div className="container-page">
-        <div className="border-line bg-surface relative overflow-hidden rounded-3xl border p-2 sm:p-3">
-          <div
-            className={cn(
-              "relative overflow-hidden rounded-2xl",
-              cover.orientation === "portrait" ? "aspect-[9/16] max-h-[80vh]" : "aspect-[16/10]",
-            )}
-          >
-            <Image
-              src={cover.src}
-              alt={cover.alt}
-              fill
-              priority
-              sizes="(min-width: 1216px) 1180px, 100vw"
-              className="object-cover object-top"
-            />
+        {project.video ? (
+          <VideoPlayer
+            src={project.video.src}
+            poster={project.video.poster ?? cover.src}
+            title={`${project.title} — walkthrough`}
+            subtitle="Press play to see it in action"
+          />
+        ) : (
+          <div className="border-line bg-surface relative overflow-hidden rounded-3xl border p-2 sm:p-3">
+            <div
+              className={cn(
+                "relative overflow-hidden rounded-2xl",
+                cover.orientation === "portrait" ? "aspect-[9/16] max-h-[80vh]" : "aspect-[16/10]",
+              )}
+            >
+              <Image
+                src={cover.src}
+                alt={cover.alt}
+                fill
+                priority
+                sizes="(min-width: 1216px) 1180px, 100vw"
+                className="object-cover object-top"
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <section className="container-page mt-20 grid gap-12 lg:grid-cols-[1.4fr_1fr]">

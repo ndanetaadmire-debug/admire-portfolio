@@ -29,6 +29,8 @@ export interface SiteConfig {
   cvPath: string;
   /** Optional intro video (e.g. "/video/intro.mp4" or a YouTube embed URL). Leave empty to hide the section. */
   introVideo?: string;
+  /** Cover image shown before the intro video plays (e.g. "/images/intro-cover.webp"). */
+  introVideoPoster?: string;
   socials: SocialLink[];
 }
 
@@ -54,6 +56,8 @@ export interface Experience {
   highlights: string[];
   stack: string[];
   metrics?: { value: string; label: string }[];
+  /** Slug of a related case study in projects.ts */
+  caseStudy?: string;
 }
 
 export interface SkillGroup {
@@ -85,7 +89,10 @@ export interface Project {
   slug: string;
   title: string;
   industry: string;
-  category: "Client" | "Portfolio";
+  /** Professional = employer product, Client = freelance client, Portfolio = own live project. */
+  category: "Professional" | "Client" | "Portfolio";
+  /** Your role on this project (defaults to "Full-Stack Developer"). */
+  role?: string;
   status: string;
   tagline: string;
   overview: string;
@@ -98,6 +105,10 @@ export interface Project {
   images: ProjectImage[];
   caseStudyPdf?: string;
   liveUrl?: string;
+  /** Headline results shown as stat tiles on the case study. */
+  metrics?: { value: string; label: string }[];
+  /** Optional walkthrough video (mp4 path in /public or YouTube embed URL) with a cover image. */
+  video?: { src: string; poster?: string };
 }
 
 export interface Education {

@@ -19,6 +19,7 @@ export const experience: Experience[] = [
       "Reviewed code and mentored junior developers on React, TypeScript, API design, testing, debugging and Git workflows.",
     ],
     stack: ["React", "TypeScript", "Node.js", "Express.js", "PostgreSQL", "Webpack", "Jest"],
+    caseStudy: "gerko",
     metrics: [
       { value: "35%", label: "faster initial load" },
       { value: "20%", label: "dev velocity gain" },

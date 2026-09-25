@@ -1,4 +1,5 @@
-import { Briefcase, MapPin } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, Briefcase, MapPin } from "lucide-react";
 import type { Experience } from "@/types/content";
 
 export function ExperienceCard({ job, compact = false }: { job: Experience; compact?: boolean }) {
@@ -55,11 +56,24 @@ export function ExperienceCard({ job, compact = false }: { job: Experience; comp
 
       <ul className="mt-6 flex flex-wrap gap-1.5">
         {job.stack.map((t) => (
-          <li key={t} className="rounded-md bg-white/[0.05] px-2 py-1 text-[11px] text-white/75">
+          <li key={t} className="rounded-md bg-white/[0.05] px-2 py-1 text-xs text-white/75">
             {t}
           </li>
         ))}
       </ul>
+
+      {job.caseStudy && (
+        <Link
+          href={`/projects/${job.caseStudy}`}
+          className="group bg-accent/10 text-accent-soft ring-accent/30 hover:bg-accent mt-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium ring-1 transition-colors hover:text-white"
+        >
+          View the {job.company} case study
+          <ArrowUpRight
+            className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            aria-hidden
+          />
+        </Link>
+      )}
     </article>
   );
 }

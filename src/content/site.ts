@@ -16,7 +16,8 @@ export const site: SiteConfig = {
   phone: "+27 81 844 1047",
   whatsapp: "27818441047",
   cvPath: "/docs/Admire_Ndaneta_CV.pdf",
-  introVideo: "",
+  introVideo: "/videos/addy_int.mp4",
+  introVideoPoster: "",
   socials: [
     {
       key: "email",
@@ -50,6 +51,6 @@ export const nav: NavItem[] = [
 
 export const stats: Stat[] = [
   { value: 6, suffix: "+", label: "Years shipping production code" },
-  { value: 9, label: "Case studies across 8 industries" },
+  { value: 10, label: "Case studies across 9 industries" },
   { value: 35, suffix: "%", label: "Faster page loads delivered at Gerko" },
 ];

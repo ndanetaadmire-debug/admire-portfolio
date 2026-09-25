@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Highlight, SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
+import { VideoPlayer } from "@/components/ui/VideoPlayer";
 import { CtaBand } from "@/components/home/CtaBand";
 import { education, workProcess } from "@/content/skills";
 import { site } from "@/content/site";
@@ -88,25 +89,20 @@ export default function AboutPage() {
       </section>
 
       {site.introVideo && (
-        <section className="container-page mt-28" aria-labelledby="video-heading">
+        <section id="intro" className="container-page mt-28 scroll-mt-28" aria-labelledby="video-heading">
           <SectionHeading
             eyebrow="For recruiters"
             title={<span id="video-heading">A 2-minute video introduction</span>}
             description="Who I am, what I've built and what I'm looking for next."
           />
-          <div className="border-line bg-surface mx-auto mt-10 aspect-video max-w-4xl overflow-hidden rounded-3xl border">
-            {site.introVideo.includes("youtube") || site.introVideo.includes("vimeo") ? (
-              <iframe
-                src={site.introVideo}
-                title="Video introduction"
-                loading="lazy"
-                allow="accelerometer; encrypted-media; picture-in-picture"
-                allowFullScreen
-                className="size-full"
-              />
-            ) : (
-              <video src={site.introVideo} controls preload="none" playsInline className="size-full" />
-            )}
+          <div className="mx-auto mt-10 max-w-4xl">
+            <VideoPlayer
+              src={site.introVideo}
+              poster={site.introVideoPoster || undefined}
+              portrait={portrait}
+              title="Meet Admire — a 2-minute intro"
+              subtitle="Who I am, what I've built and what I'm looking for next"
+            />
           </div>
         </section>
       )}
@@ -149,7 +145,11 @@ export default function AboutPage() {
                 </span>
                 <div className="flex-1">
                   <h3 className="leading-snug font-semibold">{e.title}</h3>
-                  <p className="text-muted mt-1 text-sm">{e.institution}</p>
+                  <p className="text-muted mt-1 text-sm">
+                    {e.institution}
+                    <span className="text-sky sm:hidden"> · {e.period}</span>
+                  </p>
+                  {e.detail && <p className="mt-2 text-sm leading-relaxed text-white/80">{e.detail}</p>}
                 </div>
                 <span className="text-sky hidden shrink-0 font-mono text-xs sm:block">{e.period}</span>
               </Reveal>
