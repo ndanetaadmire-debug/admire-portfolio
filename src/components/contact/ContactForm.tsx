@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, type ChangeEvent, type FocusEvent, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type FocusEvent, type FormEvent } from "react";
 import { AlertCircle, Check, CheckCircle2, Copy, Loader2, Send } from "lucide-react";
 import { validateContact, type ContactErrors } from "@/lib/contact";
 import { site } from "@/content/site";
+import { BrandIcon } from "@/components/ui/BrandIcon";
 import { cn } from "@/lib/utils";
 
 /**
@@ -23,13 +24,28 @@ const EMPTY: Values = { name: "", email: "", message: "", company: "" };
 const MAX_MESSAGE = 5000;
 
 const inputBase =
-  "w-full rounded-xl border bg-surface-2 px-4 py-3 text-sm text-white placeholder:text-subtle outline-none transition focus:ring-2";
+  "w-full rounded-xl border bg-surface-2 px-4 py-3 text-base text-white sm:text-sm placeholder:text-subtle outline-none transition focus:ring-2";
 
 export function ContactForm() {
   const [values, setValues] = useState<Values>(EMPTY);
   const [touched, setTouched] = useState<Record<Field, boolean>>({ name: false, email: false, message: false });
   const [status, setStatus] = useState<Status>("idle");
   const [copied, setCopied] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  /** Instant alternative: open WhatsApp with the visitor's message pre-filled (no server needed). */
+  function sendViaWhatsApp() {
+    const fd = formRef.current ? new FormData(formRef.current) : null;
+    const name = String(fd?.get("name") ?? "").trim();
+    const email = String(fd?.get("email") ?? "").trim();
+    const message = String(fd?.get("message") ?? "").trim();
+    const lines = ["Hi Admire, I found your portfolio."];
+    if (name) lines.push(`Name: ${name}`);
+    if (email) lines.push(`Email: ${email}`);
+    if (message) lines.push("", message);
+    const text = lines.join("\n");
+    window.open(`https://wa.me/${site.whatsapp}?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
+  }
 
   // Derived state: recomputed on every render from the current values, so it can never go stale.
   const errors: ContactErrors = validateContact(values);
@@ -124,7 +140,7 @@ export function ContactForm() {
     );
 
   return (
-    <form onSubmit={onSubmit} noValidate className="relative space-y-4">
+    <form ref={formRef} onSubmit={onSubmit} noValidate className="relative space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="name" className="text-muted mb-1.5 block text-xs">
@@ -238,15 +254,11 @@ export function ContactForm() {
         </div>
       )}
 
-      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-subtle text-xs">I usually reply within one business day.</p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <button
           type="submit"
           disabled={status === "sending"}
-          className={cn(
-            "bg-accent hover:bg-accent-soft inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white transition disabled:opacity-60",
-            !isValid && "opacity-70",
-          )}
+          className="bg-accent hover:bg-accent-soft inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white transition disabled:opacity-60 sm:w-auto"
         >
           {status === "sending" ? (
             <Loader2 className="size-4 animate-spin" aria-hidden />
@@ -255,7 +267,16 @@ export function ContactForm() {
           )}
           {status === "sending" ? "Sending…" : "Send message"}
         </button>
+        <button
+          type="button"
+          onClick={sendViaWhatsApp}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#25d366]/50 px-6 py-3 text-sm font-medium text-[#25d366] transition hover:bg-[#25d366]/10 sm:w-auto"
+        >
+          <BrandIcon name="whatsapp" className="size-4" />
+          Send via WhatsApp
+        </button>
       </div>
+      <p className="text-subtle text-xs">I usually reply within one business day.</p>
     </form>
   );
 }

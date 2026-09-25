@@ -21,7 +21,7 @@ export function ProjectCard({ project, priority = false }: { project: Project; p
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" aria-hidden />
         <span
           className={cn(
-            "absolute top-3 left-3 rounded-full px-3 py-1 text-xs font-medium backdrop-blur-md",
+            "absolute top-3 left-3 rounded-full px-3 py-1 text-xs font-medium",
             project.category === "Professional"
               ? "bg-accent/90 text-white"
               : project.category === "Client"

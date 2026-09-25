@@ -17,11 +17,11 @@ export function PageHeader({
     <header className="relative overflow-hidden pt-36 pb-12 sm:pt-44 sm:pb-16">
       <div className="bg-grid pointer-events-none absolute inset-0" aria-hidden />
       <div
-        className="animate-pulse-ring bg-accent/25 pointer-events-none absolute top-0 left-1/2 h-72 w-[42rem] max-w-full -translate-x-1/2 rounded-full blur-[120px]"
+        className="bg-accent/25 pointer-events-none absolute top-0 left-1/2 h-72 w-[42rem] max-w-full -translate-x-1/2 rounded-full blur-[120px]"
         aria-hidden
       />
       <div
-        className="animate-float bg-purple/20 pointer-events-none absolute top-24 right-[8%] hidden size-56 rounded-full blur-[100px] md:block"
+        className="bg-purple/20 pointer-events-none absolute top-24 right-[8%] hidden size-56 rounded-full blur-[100px] md:block"
         aria-hidden
       />
       <div className="container-page relative">

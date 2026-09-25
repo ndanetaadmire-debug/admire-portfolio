@@ -42,7 +42,7 @@ export function Navbar() {
         className={cn(
           "mx-auto flex max-w-6xl items-center justify-between rounded-2xl border px-3 py-2 transition-all duration-500 sm:px-4",
           scrolled || open
-            ? "border-line bg-surface/80 shadow-[0_10px_40px_-20px_rgb(0_0_0/0.8)] backdrop-blur-xl"
+            ? "border-line bg-surface/95 shadow-[0_10px_40px_-20px_rgb(0_0_0/0.8)]"
             : "border-transparent bg-transparent",
         )}
       >
@@ -100,7 +100,7 @@ export function Navbar() {
       <div
         id="mobile-menu"
         className={cn(
-          "border-line bg-surface/95 mx-auto mt-2 max-w-6xl overflow-hidden rounded-2xl border backdrop-blur-xl transition-all duration-500 lg:hidden",
+          "border-line bg-surface/95 mx-auto mt-2 max-w-6xl overflow-hidden rounded-2xl border transition-all duration-500 lg:hidden",
           open ? "max-h-[32rem] opacity-100" : "pointer-events-none max-h-0 border-transparent opacity-0",
         )}
       >

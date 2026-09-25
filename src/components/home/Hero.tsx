@@ -115,7 +115,7 @@ export function Hero() {
           {badges.map(({ icon: Icon, value, label, pos, delay }) => (
             <div
               key={label}
-              className={`animate-float border-line bg-surface/90 absolute flex items-center gap-2.5 rounded-2xl border px-3 py-2 shadow-xl backdrop-blur-md sm:gap-3 sm:px-3.5 sm:py-2.5 ${pos}`}
+              className={`animate-float border-line bg-surface/90 absolute flex items-center gap-2.5 rounded-2xl border px-3 py-2 shadow-xl sm:gap-3 sm:px-3.5 sm:py-2.5 ${pos}`}
               style={{ animationDelay: delay }}
             >
               <span className="bg-accent/20 text-accent-soft grid size-9 place-items-center rounded-xl">

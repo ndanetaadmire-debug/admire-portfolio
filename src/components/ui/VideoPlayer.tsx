@@ -91,7 +91,7 @@ export function VideoPlayer({
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10" />
 
           <span className="absolute top-1/2 left-1/2 grid size-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/15 ring-1 ring-white/30 backdrop-blur-md transition-transform duration-300 group-hover:scale-110 sm:size-24">
-            <span className="absolute inset-0 animate-ping rounded-full bg-white/10 [animation-duration:2.5s]" />
+            <span className="absolute inset-0 animate-ping rounded-full bg-white/10 [animation-duration:2.5s] [animation-iteration-count:3]" />
             <span className="bg-accent grid size-10 place-items-center rounded-full shadow-[0_0_40px_rgb(37_99_235/0.8)] sm:size-16">
               <Play className="ml-0.5 size-4 fill-white text-white sm:ml-1 sm:size-6" aria-hidden />
             </span>

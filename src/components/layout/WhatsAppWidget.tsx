@@ -98,7 +98,7 @@ export function WhatsAppWidget() {
         >
           {!open && (
             <span
-              className="absolute inset-0 animate-ping rounded-full bg-[#25d366]/25 [animation-duration:3s]"
+              className="absolute inset-0 animate-ping rounded-full bg-[#25d366]/25 [animation-duration:3s] [animation-iteration-count:3]"
               aria-hidden
             />
           )}
