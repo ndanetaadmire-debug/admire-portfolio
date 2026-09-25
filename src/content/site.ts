@@ -9,7 +9,7 @@ export const site: SiteConfig = {
   description:
     "Full-Stack Software Engineer with 6+ years building scalable SaaS and enterprise web apps with React, Next.js, TypeScript, Node.js, PostgreSQL and AWS.",
   // Set NEXT_PUBLIC_SITE_URL in Vercel → Settings → Environment Variables once you have a custom domain.
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://admiredevportfolio.vercel.app",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://admire-portfolio.vercel.app",
   location: "South Africa · Remote",
   availability: "Open to full-stack roles & contract work",
   email: "ndanetaadmire@gmail.com",

@@ -7,12 +7,12 @@ import { site } from "@/content/site";
 import { cn } from "@/lib/utils";
 
 /**
- * Controlled contact form.
+ * Contact form.
  *
- * - Every input's value lives in React state (`values`) — the DOM never holds the source of truth.
- * - Errors are shown only after a field is "touched" (blurred) or after a submit attempt,
- *   then update live as the visitor types.
- * - The submit sends JSON to /api/contact and shows a clear on-page result for every outcome.
+ * - Inputs are uncontrolled (defaultValue) so browser autofill and password managers can never
+ *   be overwritten or ignored by React; on submit we read the real values with FormData.
+ * - React state mirrors every keystroke for live validation and the character counter.
+ * - Errors show after a field is touched or on submit, and every outcome shows a clear result.
  */
 
 type Field = "name" | "email" | "message";
@@ -49,8 +49,20 @@ export function ContactForm() {
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (status === "sending") return;
     setTouched({ name: true, email: true, message: true }); // reveal all errors on submit
-    if (!isValid || status === "sending") return;
+
+    // Browser autofill can put text in the inputs without firing React's onChange.
+    // Read what is actually in the form and sync it into state before validating.
+    const fd = new FormData(e.currentTarget);
+    const current: Values = {
+      name: String(fd.get("name") ?? values.name),
+      email: String(fd.get("email") ?? values.email),
+      message: String(fd.get("message") ?? values.message),
+      company: values.company,
+    };
+    setValues(current);
+    if (Object.keys(validateContact(current)).length) return;
 
     setStatus("sending");
     try {
@@ -58,10 +70,10 @@ export function ContactForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: values.name.trim(),
-          email: values.email.trim(),
-          message: values.message.trim(),
-          company: values.company,
+          name: current.name.trim(),
+          email: current.email.trim(),
+          message: current.message.trim(),
+          company: current.company,
         }),
       });
       if (res.ok) {
@@ -121,7 +133,7 @@ export function ContactForm() {
           <input
             id="name"
             name="name"
-            value={values.name}
+            defaultValue={values.name}
             onChange={onChange}
             onBlur={onBlur}
             autoComplete="name"
@@ -144,7 +156,7 @@ export function ContactForm() {
             id="email"
             name="email"
             type="email"
-            value={values.email}
+            defaultValue={values.email}
             onChange={onChange}
             onBlur={onBlur}
             autoComplete="email"
@@ -177,7 +189,7 @@ export function ContactForm() {
           id="message"
           name="message"
           rows={6}
-          value={values.message}
+          defaultValue={values.message}
           onChange={onChange}
           onBlur={onBlur}
           placeholder="Tell me about the role or project…"
@@ -194,14 +206,14 @@ export function ContactForm() {
 
       {/* Honeypot — hidden from people, filled in by bots */}
       <div aria-hidden className="absolute -left-[9999px]">
-        <label htmlFor="company">Company</label>
+        <label htmlFor="hp-field">Leave this field empty</label>
         <input
-          id="company"
-          name="company"
-          value={values.company}
-          onChange={onChange}
+          id="hp-field"
+          name="hp_field"
+          defaultValue={values.company}
+          onChange={(e) => setValues((v) => ({ ...v, company: e.target.value }))}
           tabIndex={-1}
-          autoComplete="off"
+          autoComplete="new-password"
         />
       </div>
 
